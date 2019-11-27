@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import {Text, View, Dimensions, Animated, ViewPropTypes} from 'react-native';
 import PropTypes from 'prop-types';
 import XDate from 'xdate';
-
 import {parseDate, xdateToData} from '../interface';
 import dateutils from '../dateutils';
 import CalendarList from '../calendar-list';
@@ -11,7 +10,7 @@ import styleConstructor from './style';
 import {VelocityTracker} from '../input';
 
 
-const HEADER_HEIGHT = 104;
+const HEADER_HEIGHT = 114;
 const KNOB_HEIGHT = 24;
 //Fallback when RN version is < 0.44
 const viewPropTypes = ViewPropTypes || View.propTypes;
@@ -189,7 +188,7 @@ export default class AgendaView extends Component {
       clearTimeout(this.scrollTimeout);
       this.scrollTimeout = setTimeout(() => {
         if (this.props.loadItemsForMonth && this._isMounted) {
-          this.props.loadItemsForMonth(months[0]);
+          this.props.loadItemsForMonth(months[0], this.state.calendarScrollable);
         }
       }, 200);
     }
@@ -201,7 +200,7 @@ export default class AgendaView extends Component {
         firstResevationLoad: true
       }, () => {
         if (this.props.loadItemsForMonth) {
-          this.props.loadItemsForMonth(xdateToData(this.state.selectedDay));
+          this.props.loadItemsForMonth(xdateToData(this.state.selectedDay), this.state.calendarScrollable);
         }
       });
     }
@@ -271,7 +270,7 @@ export default class AgendaView extends Component {
     this.calendar.scrollToDay(day, this.calendarOffset(), true);
     
     if (this.props.loadItemsForMonth) {
-      this.props.loadItemsForMonth(xdateToData(day));
+      this.props.loadItemsForMonth(xdateToData(day), false);
     }
 
     if (this.props.onDayPress) {
@@ -301,9 +300,9 @@ export default class AgendaView extends Component {
     );
   }
 
-  onDayChange(day) {
+  onDayChange(day, f = true) {
     const newDate = parseDate(day);
-    const withAnimation = dateutils.sameMonth(newDate, this.state.selectedDay);
+    const withAnimation = dateutils.sameMonth(newDate, this.state.selectedDay && f);
     
     this.calendar.scrollToDay(day, this.calendarOffset(), withAnimation);
     this.setState({
@@ -322,7 +321,7 @@ export default class AgendaView extends Component {
       markings = {};
       Object.keys(this.props.items  || {}).forEach(key => {
         if (this.props.items[key] && this.props.items[key].length) {
-          markings[key] = {marked: true};
+          markings[key] = { itemsList: this.props.items[key],  marked: true };
         }
       });
     }
@@ -356,7 +355,7 @@ export default class AgendaView extends Component {
 
     const contentTranslate = this.state.scrollY.interpolate({
       inputRange: [0, agendaHeight],
-      outputRange: [0, agendaHeight/2],
+      outputRange: [0, agendaHeight/2 -5],
       extrapolate: 'clamp'
     });
 

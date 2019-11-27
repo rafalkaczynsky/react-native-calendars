@@ -9,7 +9,7 @@ export default function styleConstructor(theme={}) {
     base: {
       width: 32,
       height: 32,
-      alignItems: 'center'
+      alignItems: 'center',
     },
     text: {
       marginTop: Platform.OS === 'android' ? 4 : 6,
@@ -24,8 +24,10 @@ export default function styleConstructor(theme={}) {
       marginTop: Platform.OS === 'android' ? 4 : 6
     },
     selected: {
+      width: 40,
+      height: 40,
       backgroundColor: appStyle.selectedDayBackgroundColor,
-      borderRadius: 16
+      borderRadius: 20
     },
     today: {
       backgroundColor: appStyle.todayBackgroundColor,
@@ -41,10 +43,10 @@ export default function styleConstructor(theme={}) {
       color: appStyle.textDisabledColor
     },
     dot: {
-      width: 4,
-      height: 4,
+      width: 8,
+      height: 8,
       marginTop: 1,
-      borderRadius: 2,
+      borderRadius: 4,
       opacity: 0,
       ...appStyle.dotStyle
     },

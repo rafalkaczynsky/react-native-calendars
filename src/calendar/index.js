@@ -182,6 +182,7 @@ class Calendar extends Component {
           onPress={this.pressDay}
           onLongPress={this.longPressDay}
           date={dateAsObject}
+          day={day}
           marking={this.getDateMarking(day)}
         >
           {date}

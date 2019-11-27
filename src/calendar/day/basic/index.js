@@ -8,6 +8,7 @@ import PropTypes from 'prop-types';
 import {shouldUpdate} from '../../../component-updater';
 
 import styleConstructor from './style';
+// import { constants } from 'os';
 
 class Day extends Component {
   static displayName = 'IGNORE';
@@ -43,6 +44,7 @@ class Day extends Component {
   }
 
   render() {
+
     const containerStyle = [this.style.base];
     const textStyle = [this.style.text];
     const dotStyle = [this.style.dot];
@@ -55,6 +57,62 @@ class Day extends Component {
     }
     const isDisabled = typeof marking.disabled !== 'undefined' ? marking.disabled : this.props.state === 'disabled';
     let dot;
+
+    let approvedCount = 0, rejectedCount = 0, awaitingCount= 0;
+    
+    if(marking.itemsList){
+      marking.itemsList.map(item => {
+        if (item.approved == null) {
+          awaitingCount++;
+        }
+
+        if (item.approved == false) {
+          rejectedCount++;
+        }
+
+        if (item.approved == true) {
+          approvedCount++;
+
+        }
+     });
+    }
+
+  const approvedDot = (
+  <View style={{
+    backgroundColor: 'green', 
+    width: 12, height: 12, 
+    borderRadius: 6, 
+    alignItems: 'center'
+  }}>
+    <Text style={{fontSize: 10,color:'white'}}>
+      {approvedCount}
+    </Text>
+  </View>)
+
+    const rejectedDot = (
+      <View style={{
+        backgroundColor: 'lightgrey', 
+        width: 12, height: 12, 
+        borderRadius: 6, 
+        alignItems: 'center'
+      }}>
+        <Text style={{fontSize: 10,color:'white'}}>
+          {rejectedCount}
+        </Text>
+      </View>)
+    
+    const awaitingDot = (
+      <View style={{
+        backgroundColor: 'red', 
+        width: 12, height: 12, 
+        borderRadius: 6, 
+        alignItems: 'center'
+      }}>
+        <Text style={{fontSize: 10,color:'white'}}>
+          {awaitingCount}
+        </Text>
+      </View>)
+    
     if (marking.marked) {
       dotStyle.push(this.style.visibleDot);
       if (isDisabled) {
@@ -80,18 +138,23 @@ class Day extends Component {
       textStyle.push(this.style.todayText);
       dotStyle.push(this.style.todayDot);
     }
-
     return (
       <TouchableOpacity
         testID={this.props.testID}
-        style={containerStyle}
+        style={[containerStyle]}
         onPress={this.onDayPress}
         onLongPress={this.onDayLongPress}
         activeOpacity={marking.activeOpacity}
         disabled={marking.disableTouchEvent}
       >
         <Text allowFontScaling={false} style={textStyle}>{String(this.props.children)}</Text>
-        {dot}
+        {/* {dot} */}
+        <View style={{position: 'absolute', bottom: 0, left: 0, right:0, flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
+          {approvedCount > 0 ? approvedDot : null}
+          {awaitingCount > 0 ? awaitingDot : null}
+          {rejectedCount > 0 ? rejectedDot : null}
+        </View>
+
       </TouchableOpacity>
     );
   }
